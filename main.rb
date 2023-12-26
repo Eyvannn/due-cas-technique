@@ -1,19 +1,20 @@
-require 'rubyXL'
-require 'pg'
+require "rubyXL"
+require "pg"
 
 require_relative "outils_postgresql.rb"
-require_relative "orders.rb"
+require_relative "order.rb"
 
 
 connexion_bd = OutilsPostgreSQL.open_connexion("due", "due", "due_mdp")
 
 workbook = RubyXL::Parser.parse("Orders.xlsx")
 
-workbook.worksheets.each do |worksheet|
-  puts worksheet.sheet_name
-  order_id = worksheet.sheet_name.sub("Order ", "").to_i
-  connexion_bd.exec_params("INSERT INTO orders (orderid, ordername) VALUES ($1, $2)", [order_id, worksheet.sheet_name])
+orders = []
 
+workbook.worksheets.each do |worksheet|
+  order_id = worksheet.sheet_name.sub("Order ", "").to_i
+  orders << Order.new(order_id, worksheet.sheet_name)
+  orders[-1].insert_in_database(connexion_bd)
 
   current_package = -1
   current_item = -1
