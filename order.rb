@@ -4,7 +4,10 @@ class Order
   def initialize(orderid, ordername)
     @orderid = orderid
     @ordername = ordername
-    @packages = []
+  end
+
+  def get_orderid
+    @orderid
   end
 
   def insert_in_database(connexion_bd)
